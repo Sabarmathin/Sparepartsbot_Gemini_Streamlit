@@ -1,0 +1,10 @@
+name: spare_parts_bot
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - streamlit
+    - google-generativeai
+    - python-dotenv
