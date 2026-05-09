@@ -37,7 +37,7 @@ if prompt := st.chat_input("Ask about parts..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
 
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-3.1-flash-lite-preview')
     
     # System Instruction
     context = f"You are a spare parts dealer. Inventory: {json.dumps(inventory)}. "
