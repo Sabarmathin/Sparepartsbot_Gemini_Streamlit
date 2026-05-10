@@ -49,11 +49,12 @@ if prompt := st.chat_input("Ask about parts..."):
     
     try:
         response = model.generate_content(f"{context}\nUser: {prompt}")
+        print(response )
         st.session_state.messages.append({"role": "assistant", "content": response.text})
         st.chat_message("assistant").write(response.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
-print(response )
+
 #5.Adding order details to gsheets
 # 1. Initialize Connection (Uses secrets.toml or Streamlit secrets)
 conn = st.connection("gsheets", type=GSheetsConnection)
