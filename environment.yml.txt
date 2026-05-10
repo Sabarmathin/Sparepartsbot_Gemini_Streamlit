@@ -9,4 +9,4 @@ dependencies:
     - python-dotenv
     - google-generativeai
     - pandas
-    - GSheetsConnection
+    - st-gsheets-connection
