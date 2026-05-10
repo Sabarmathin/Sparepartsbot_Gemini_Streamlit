@@ -69,7 +69,7 @@ if prompt := st.chat_input("Ask about parts..."):
                 "Phone Number": lines[2],
                 "Order Summary": "Chat Order"
             }
-        client = conn.client
+        client = conn._instance.client 
         sh = client.open_by_key(SHEET_ID)
         worksheet = sh.get_worksheet(0) # First tab
         
