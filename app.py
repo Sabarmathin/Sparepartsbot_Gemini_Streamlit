@@ -4,6 +4,7 @@ import json
 import google.generativeai as genai
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
+import gspread
 
 # 1. Load Environment Variables
 
@@ -57,7 +58,7 @@ if prompt := st.chat_input("Ask about parts..."):
     # 1. Initialize Connection
     conn = st.connection("gsheets", type=GSheetsConnection)
     SHEET_ID = "1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw"
-
+    
     # --- SIMPLIFIED EXTRACTION LOGIC ---
     # In a real app, you would use an LLM (like Gemini) to parse this.
     # For now, we assume the user provides it in a recognizable way.
@@ -70,9 +71,15 @@ if prompt := st.chat_input("Ask about parts..."):
                 "Phone Number": prompt.split("Phone:")[1].strip() if "Phone:" in prompt else "N/A",
                 "Order Summary": "New Order from Chat"
             }
-
+            client = conn.client
+            sh = client.open_by_key(SHEET_ID)
+            worksheet = sh.get_worksheet(0) # First tab
+        
+            # Append just the values as a list
+            worksheet.append_row([details['Name'], details['Address'], details['Phone Number'], "Chat Order"])
+            
             # 4. Update Google Sheet
-            existing_df = conn.read(spreadsheet=SHEET_ID)
+            existing_df = conn.read(spreadsheet=SHEET_ID, ttl=0)
             updated_df = pd.concat([existing_df, pd.DataFrame([details])], ignore_index=True)
             conn.update(spreadsheet=SHEET_ID, data=updated_df)
 
