@@ -55,36 +55,34 @@ if prompt := st.chat_input("Ask about parts..."):
         st.error(f"Gemini Error: {e}")
 
 #5.Adding order details to gsheets
-# 1. Initialize Connection (Uses secrets.toml or Streamlit secrets)
+# 1. Setup Connection
 conn = st.connection("gsheets", type=GSheetsConnection)
+
+# 2. Collect Data from User
+with st.form("order_form"):
+    name = st.text_input("Name")
+    address = st.text_area("Address")
+    phone = st.text_input("Phone Number")
+    summary = st.text_area("Order Summary")
     
-# 2. Logic to save details
-def save_to_gsheets(name, address, phone, part_info):
-    # Create a new row of data
-    new_data = pd.DataFrame([{
+    submit_button = st.form_submit_button("Submit Order")
+
+if submit_button:
+    # 3. Fetch existing data
+    existing_data = conn.read(spreadsheet=SHEET_ID)
+    
+    # 4. Create a new row (ensure the column names match your sheet exactly)
+    new_order = pd.DataFrame([{
         "Name": name,
         "Address": address,
-        "Phone": phone,
-        "Order_Details": part_info
+        "Phone Number": phone,
+        "Order Summary": summary
     }])
     
-    # Read existing data
-    existing_data = conn.read(worksheet="Sheet1")
+    # 5. Add new row to existing data
+    updated_df = pd.concat([existing_data, new_order], ignore_index=True)
     
-    # Append and update
-    updated_df = pd.concat([existing_data, new_data], ignore_index=True)
-    conn.update(worksheet="Sheet1", data=updated_df)
-    st.success("Order details saved to Google Sheets!")
-# Initialize 'awaiting_info' if it doesn't exist yet
-if 'awaiting_info' not in st.session_state:
-    st.session_state.awaiting_info = False 
-# 3. Integration in your Chatbot loop
-if st.session_state.awaiting_info:
-    # Assuming user provides: "Sairam, 123 Main St, 9876543210"
-    user_data = prompt.split(",") 
-    if len(user_data) == 3:
-        name, address, phone = [item.strip() for item in user_data]
-        save_to_gsheets(name, address, phone, "User requested order")
-        st.session_state.awaiting_info = False
-    else:
-        st.warning("Please provide Name, Address, and Phone separated by commas.")
+    # 6. Update the Google Sheet
+    conn.update(spreadsheet=SHEET_ID, data=updated_df)
+    
+    st.success("Order added successfully!")
