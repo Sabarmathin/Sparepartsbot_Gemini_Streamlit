@@ -60,22 +60,24 @@ if prompt := st.chat_input("Ask about parts..."):
     SHEET_ID = "1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw"
     
     if prompt:
-        # Split by lines instead of commas
-        lines = prompt.split('\n')
-        if len(lines) >= 3:
-            details = {
-                "Name": lines[0],
-                "Address": lines[1],
-                "Phone Number": lines[2],
-                "Order Summary": "Chat Order"
-            }
-        client = conn._instance.client 
-        sh = client.open_by_key(SHEET_ID)
-        worksheet = sh.get_worksheet(0) # First tab
+        df = conn.read(spreadsheet=SHEET_ID, ttl=0)
         
-        # Append just the values as a list
-        worksheet.append_row([details['Name'], details['Address'], details['Phone Number'], "Chat Order"])
-   
+        # 2. Create your new row
+        new_data = pd.DataFrame([{
+            "Name": name,
+            "Address": address, 
+            "Phone Number": phone,
+            "Order Summary": "Placed via Chat"
+        }])
+        
+        # 3. Add the new row to the old data
+        # fillna('') prevents errors if your sheet has empty cells
+        updated_df = pd.concat([df, new_data], ignore_index=True).fillna("")
+        
+        # 4. Save it back to Google Sheets
+        conn.update(spreadsheet=SHEET_ID, data=updated_df)
+        
+        st.success("Sheet updated successfully!")
 
 # # Show assistant response
 # st.session_state.messages.append({"role": "assistant", "content": response})
