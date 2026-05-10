@@ -1,4 +1,5 @@
 streamlit
+python-dotenv
 google-generativeai
 streamlit_gsheets-GSheetsConnection
 pandas
