@@ -1,13 +1,12 @@
 import streamlit as st
 import os
 import json
-from dotenv import load_dotenv
 import google.generativeai as genai
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
 # 1. Load Environment Variables
-load_dotenv()
+
 api_key = os.getenv("GOOGLE_API_KEY")
 
 if not api_key:
