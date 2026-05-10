@@ -57,7 +57,7 @@ if prompt := st.chat_input("Ask about parts..."):
 #5.Adding order details to gsheets
 # 1. Initialize Connection (Uses secrets.toml or Streamlit secrets)
 conn = st.connection("gsheets", type=GSheetsConnection)
-
+    
 # 2. Logic to save details
 def save_to_gsheets(name, address, phone, part_info):
     # Create a new row of data
@@ -75,7 +75,9 @@ def save_to_gsheets(name, address, phone, part_info):
     updated_df = pd.concat([existing_data, new_data], ignore_index=True)
     conn.update(worksheet="Sheet1", data=updated_df)
     st.success("Order details saved to Google Sheets!")
-
+# Initialize 'awaiting_info' if it doesn't exist yet
+if 'awaiting_info' not in st.session_state:
+    st.session_state.awaiting_info = False 
 # 3. Integration in your Chatbot loop
 if st.session_state.awaiting_info:
     # Assuming user provides: "Sairam, 123 Main St, 9876543210"
