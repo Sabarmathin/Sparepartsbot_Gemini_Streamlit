@@ -3,6 +3,8 @@ import os
 import json
 from dotenv import load_dotenv
 import google.generativeai as genai
+from streamlit_gsheets import GSheetsConnection
+import pandas as pd
 
 # 1. Load Environment Variables
 load_dotenv()
@@ -29,7 +31,7 @@ st.title("Spare Parts Assistant")
 if "messages" not in st.session_state:
     st.session_state.messages = [{
             "role": "assistant", 
-            "content": "Hi, I am Sairam, your Spare Parts Assistant. How can I help you today?"
+            "content": "Hi, I am Sabarmathi, your Spare Parts Assistant. How can I help you today?"
         }]
 
 for msg in st.session_state.messages:
@@ -52,3 +54,36 @@ if prompt := st.chat_input("Ask about parts..."):
         st.chat_message("assistant").write(response.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
+
+#5.Adding order details to gsheets
+# 1. Initialize Connection (Uses secrets.toml or Streamlit secrets)
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# 2. Logic to save details
+def save_to_gsheets(name, address, phone, part_info):
+    # Create a new row of data
+    new_data = pd.DataFrame([{
+        "Name": name,
+        "Address": address,
+        "Phone": phone,
+        "Order_Details": part_info
+    }])
+    
+    # Read existing data
+    existing_data = conn.read(worksheet="Sheet1")
+    
+    # Append and update
+    updated_df = pd.concat([existing_data, new_data], ignore_index=True)
+    conn.update(worksheet="Sheet1", data=updated_df)
+    st.success("Order details saved to Google Sheets!")
+
+# 3. Integration in your Chatbot loop
+if st.session_state.awaiting_info:
+    # Assuming user provides: "Sairam, 123 Main St, 9876543210"
+    user_data = prompt.split(",") 
+    if len(user_data) == 3:
+        name, address, phone = [item.strip() for item in user_data]
+        save_to_gsheets(name, address, phone, "User requested order")
+        st.session_state.awaiting_info = False
+    else:
+        st.warning("Please provide Name, Address, and Phone separated by commas.")
