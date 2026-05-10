@@ -59,38 +59,23 @@ if prompt := st.chat_input("Ask about parts..."):
     conn = st.connection("gsheets", type=GSheetsConnection)
     SHEET_ID = "1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw"
     
-    # --- SIMPLIFIED EXTRACTION LOGIC ---
-    # In a real app, you would use an LLM (like Gemini) to parse this.
-    # For now, we assume the user provides it in a recognizable way.
-    if "Name:" in prompt and "Address:" in prompt:
-        try:
-            # Basic parsing (example: "Name: John, Address: 123 St, Phone: 555")
+    if prompt:
+        # Split by lines instead of commas
+        lines = prompt.split('\n')
+        if len(lines) >= 3:
             details = {
-                "Name": prompt.split("Name:")[1].split(",")[0].strip(),
-                "Address": prompt.split("Address:")[1].split(",")[0].strip(),
-                "Phone Number": prompt.split("Phone:")[1].strip() if "Phone:" in prompt else "N/A",
-                "Order Summary": "New Order from Chat"
+                "Name": lines[0],
+                "Address": lines[1],
+                "Phone Number": lines[2],
+                "Order Summary": "Chat Order"
             }
-            client = conn.client
-            sh = client.open_by_key(SHEET_ID)
-            worksheet = sh.get_worksheet(0) # First tab
+        client = conn.client
+        sh = client.open_by_key(SHEET_ID)
+        worksheet = sh.get_worksheet(0) # First tab
         
-            # Append just the values as a list
-            worksheet.append_row([details['Name'], details['Address'], details['Phone Number'], "Chat Order"])
-            
-            # 4. Update Google Sheet
-            existing_df = conn.read(spreadsheet=SHEET_ID, ttl=0)
-            updated_df = pd.concat([existing_df, pd.DataFrame([details])], ignore_index=True)
-            conn.update(spreadsheet=SHEET_ID, data=updated_df)
-
-            response1 = f"Thank you {details['Name']}! Your order has been recorded."
-            print(response1)
-        except Exception as e:
-            response1 = "I couldn't parse that. Please use the format: 'Name: [name], Address: [address], Phone: [number]'"
-            print(response1)
-    else:
-        response1 = "Please provide details in this format: Name: [name], Address: [address], Phone: [number]"
-        print(response1)
+        # Append just the values as a list
+        worksheet.append_row([details['Name'], details['Address'], details['Phone Number'], "Chat Order"])
+   
 
 # # Show assistant response
 # st.session_state.messages.append({"role": "assistant", "content": response})
