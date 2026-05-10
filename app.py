@@ -59,10 +59,6 @@ if prompt := st.chat_input("Ask about parts..."):
 conn = st.connection("gsheets", type=GSheetsConnection)
 SHEET_ID = "1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw"
 
-# Display chat history
-for msg in st.session_state.messages:
-    st.chat_message(msg["role"]).write(msg["content"])
-
 # 3. Handle Chat Input
 if prompt := st.chat_input("Type your order details..."):
     # Show user message
