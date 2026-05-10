@@ -77,10 +77,13 @@ if prompt := st.chat_input("Ask about parts..."):
             conn.update(spreadsheet=SHEET_ID, data=updated_df)
 
             response1 = f"Thank you {details['Name']}! Your order has been recorded."
+            print(response1)
         except Exception as e:
             response1 = "I couldn't parse that. Please use the format: 'Name: [name], Address: [address], Phone: [number]'"
+            print(response1)
     else:
         response1 = "Please provide details in this format: Name: [name], Address: [address], Phone: [number]"
+        print(response1)
 
 # # Show assistant response
 # st.session_state.messages.append({"role": "assistant", "content": response})
