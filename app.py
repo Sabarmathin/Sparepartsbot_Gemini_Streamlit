@@ -69,7 +69,7 @@ with st.form("order_form"):
 
 if submit_button:
     # 3. Fetch existing data
-    existing_data = conn.read(spreadsheet=SHEET_ID)
+    existing_data = conn.read()
     
     # 4. Create a new row (ensure the column names match your sheet exactly)
     new_order = pd.DataFrame([{
@@ -83,6 +83,6 @@ if submit_button:
     updated_df = pd.concat([existing_data, new_order], ignore_index=True)
     
     # 6. Update the Google Sheet
-    conn.update(spreadsheet=SHEET_ID, data=updated_df)
+    conn.update(data=updated_df)
     
     st.success("Order added successfully!")
