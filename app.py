@@ -49,7 +49,7 @@ if prompt := st.chat_input("Ask about parts..."):
     
     try:
         response = model.generate_content(f"{context}\nUser: {prompt}")
-        print(response )
+        print(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
         st.chat_message("assistant").write(response.text)
     except Exception as e:
