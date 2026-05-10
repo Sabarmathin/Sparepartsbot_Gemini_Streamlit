@@ -51,7 +51,7 @@ if prompt := st.chat_input("Ask about parts..."):
         response = model.generate_content(f"{context}\nUser: {prompt}")
         print(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
-        #st.chat_message("assistant").write(response.text)
+        st.chat_message("assistant").write(response.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
     # 1. Initialize Connection
@@ -76,12 +76,12 @@ if prompt := st.chat_input("Ask about parts..."):
             updated_df = pd.concat([existing_df, pd.DataFrame([details])], ignore_index=True)
             conn.update(spreadsheet=SHEET_ID, data=updated_df)
 
-            response = f"Thank you {details['Name']}! Your order has been recorded."
+            response1 = f"Thank you {details['Name']}! Your order has been recorded."
         except Exception as e:
-            response = "I couldn't parse that. Please use the format: 'Name: [name], Address: [address], Phone: [number]'"
+            response1 = "I couldn't parse that. Please use the format: 'Name: [name], Address: [address], Phone: [number]'"
     else:
-        response = "Please provide details in this format: Name: [name], Address: [address], Phone: [number]"
+        response1 = "Please provide details in this format: Name: [name], Address: [address], Phone: [number]"
 
-# Show assistant response
-st.session_state.messages.append({"role": "assistant", "content": response})
-st.chat_message("assistant").write(response)
+# # Show assistant response
+# st.session_state.messages.append({"role": "assistant", "content": response})
+# st.chat_message("assistant").write(response)
