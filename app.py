@@ -59,10 +59,6 @@ if prompt := st.chat_input("Ask about parts..."):
 conn = st.connection("gsheets", type=GSheetsConnection)
 SHEET_ID = "1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw"
 
-# 2. Initialize Session State for Chat
-if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hello! Please provide your Name, Address, and Phone Number to place an order."}]
-
 # Display chat history
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
