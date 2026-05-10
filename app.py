@@ -53,7 +53,7 @@ if prompt := st.chat_input("Ask about parts..."):
         st.chat_message("assistant").write(response.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
-
+print(response )
 #5.Adding order details to gsheets
 # 1. Initialize Connection (Uses secrets.toml or Streamlit secrets)
 conn = st.connection("gsheets", type=GSheetsConnection)
