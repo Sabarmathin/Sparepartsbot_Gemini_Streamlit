@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import json
 import google.generativeai as genai
-from streamlit_gsheets import st-gsheets-connection
+from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 
 # 1. Load Environment Variables
@@ -56,7 +56,7 @@ if prompt := st.chat_input("Ask about parts..."):
 
 #5.Adding order details to gsheets
 # 1. Initialize Connection (Uses secrets.toml or Streamlit secrets)
-conn = st.connection("gsheets", type=st-gsheets-connection)
+conn = st.connection("gsheets", type=GSheetsConnection)
 
 # 2. Logic to save details
 def save_to_gsheets(name, address, phone, part_info):
