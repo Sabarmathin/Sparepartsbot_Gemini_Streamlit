@@ -60,24 +60,30 @@ if prompt := st.chat_input("Ask about parts..."):
     SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
     
     if prompt:
-        df = conn.read(spreadsheet=SHEET_ID, ttl=0)
+        def save_to_gsheets(name, address, phone,part_info):
+            # Create a new row of data
+            new_data = pd.DataFrame([{
+                "Name": name,
+                "Address": address,
+                "Phone": phone,
+                "Order_Details": part_info
+            }])
+            df = conn.read(spreadsheet=SHEET_ID, ttl=0)
+                     
+            # 3. Add the new row to the old data
+            # fillna('') prevents errors if your sheet has empty cells
+            updated_df = pd.concat([df, new_data], ignore_index=True).fillna("")
         
-        # 2. Create your new row
-        new_data = pd.DataFrame([{
-            "Name": name,
-            "Address": address, 
-            "Phone Number": phone,
-            "Order Summary": "Placed via Chat"
-        }])
+            # 4. Save it back to Google Sheets
+            conn.update(spreadsheet=SHEET_ID, data=updated_df)
         
-        # 3. Add the new row to the old data
-        # fillna('') prevents errors if your sheet has empty cells
-        updated_df = pd.concat([df, new_data], ignore_index=True).fillna("")
-        
-        # 4. Save it back to Google Sheets
-        conn.update(spreadsheet=SHEET_ID, data=updated_df)
-        
-        st.success("Sheet updated successfully!")
+        user_data = prompt.split(",") 
+        if len(user_data) == 3:
+            name, address, phone = [item.strip() for item in user_data]
+            save_to_gsheets(name, address, phone, "User requested order")
+            st.session_state.awaiting_info = False
+        else:
+            st.warning("Please provide Name, Address, and Phone separated by commas.")
 
 # # Show assistant response
 # st.session_state.messages.append({"role": "assistant", "content": response})
