@@ -57,7 +57,7 @@ if prompt := st.chat_input("Ask about parts..."):
         st.error(f"Gemini Error: {e}")
     # 1. Initialize Connection
     conn = st.connection("gsheets", type=GSheetsConnection)
-    SHEET_ID = ""
+    SHEET_ID = "1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw"
     
     if prompt:
         df = conn.read(spreadsheet=SHEET_ID, ttl=0)
