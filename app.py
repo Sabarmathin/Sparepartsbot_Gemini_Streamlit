@@ -59,7 +59,7 @@ if prompt := st.chat_input("Ask about parts..."):
     conn = st.connection("gsheets", type=GSheetsConnection)
     SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
     
-    if prompt:
+    if prompt is in ('order','name','address','phone','purchase'):
         def save_to_gsheets(name, address, phone,part_info):
             # Create a new row of data
             new_data = pd.DataFrame([{
