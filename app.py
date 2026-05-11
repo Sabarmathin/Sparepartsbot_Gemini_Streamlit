@@ -61,7 +61,10 @@ if prompt := st.chat_input("Ask about parts..."):
     
     if prompt:
         order_keywords = ["order", "purchase", "buy", "checkout", "get this","name","address","phone"]
+        user_data = prompt.split(",")
         if any(word in prompt.lower() for word in order_keywords):
+            st.warning("Please provide Name, Address, and Phone separated by commas.")
+        elif len(user_data) == 3:
             def save_to_gsheets(name, address, phone,part_info):
                 # Create a new row of data
                 new_data = pd.DataFrame([{
@@ -77,9 +80,8 @@ if prompt := st.chat_input("Ask about parts..."):
                 updated_df = pd.concat([df, new_data], ignore_index=True).fillna("")
             
                 # 4. Save it back to Google Sheets
-                conn.update(spreadsheet=SHEET_ID, data=updated_df)
+                conn.update(spreadsheet=SHEET_ID, data=updated_df)            
             
-            user_data = prompt.split(",") 
             if len(user_data) == 3:
                 name, address, phone = [item.strip() for item in user_data]
                 save_to_gsheets(name, address, phone, "User requested order")
