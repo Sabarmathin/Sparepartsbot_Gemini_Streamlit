@@ -59,31 +59,33 @@ if prompt := st.chat_input("Ask about parts..."):
     conn = st.connection("gsheets", type=GSheetsConnection)
     SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
     
-    if prompt is in ('order','name','address','phone','purchase'):
-        def save_to_gsheets(name, address, phone,part_info):
-            # Create a new row of data
-            new_data = pd.DataFrame([{
-                "Name": name,
-                "Address": address,
-                "Phone": phone,
-                "Order_Details": part_info
-            }])
-            df = conn.read(spreadsheet=SHEET_ID, ttl=0)
-                     
-            # 3. Add the new row to the old data
-            # fillna('') prevents errors if your sheet has empty cells
-            updated_df = pd.concat([df, new_data], ignore_index=True).fillna("")
-        
-            # 4. Save it back to Google Sheets
-            conn.update(spreadsheet=SHEET_ID, data=updated_df)
-        
-        user_data = prompt.split(",") 
-        if len(user_data) == 3:
-            name, address, phone = [item.strip() for item in user_data]
-            save_to_gsheets(name, address, phone, "User requested order")
-            st.session_state.awaiting_info = False
-        else:
-            st.warning("Please provide Name, Address, and Phone separated by commas.")
+    if prompt:
+        order_keywords = ["order", "purchase", "buy", "checkout", "get this","name","address","phone"]
+        if any(word in prompt.lower() for word in order_keywords):
+            def save_to_gsheets(name, address, phone,part_info):
+                # Create a new row of data
+                new_data = pd.DataFrame([{
+                    "Name": name,
+                    "Address": address,
+                    "Phone": phone,
+                    "Order_Details": part_info
+                }])
+                df = conn.read(spreadsheet=SHEET_ID, ttl=0)
+                         
+                # 3. Add the new row to the old data
+                # fillna('') prevents errors if your sheet has empty cells
+                updated_df = pd.concat([df, new_data], ignore_index=True).fillna("")
+            
+                # 4. Save it back to Google Sheets
+                conn.update(spreadsheet=SHEET_ID, data=updated_df)
+            
+            user_data = prompt.split(",") 
+            if len(user_data) == 3:
+                name, address, phone = [item.strip() for item in user_data]
+                save_to_gsheets(name, address, phone, "User requested order")
+                st.session_state.awaiting_info = False
+            else:
+                st.warning("Please provide Name, Address, and Phone separated by commas.")
 
 # # Show assistant response
 # st.session_state.messages.append({"role": "assistant", "content": response})
