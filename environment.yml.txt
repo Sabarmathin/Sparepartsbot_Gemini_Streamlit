@@ -7,6 +7,6 @@ dependencies:
   - pip:
     - streamlit
     - python-dotenv
-    - google-genai
+    - google-generativeai
     - pandas
     - st-gsheets-connection
