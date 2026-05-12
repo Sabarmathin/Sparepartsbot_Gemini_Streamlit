@@ -53,6 +53,7 @@ if prompt := st.chat_input("Ask about parts..."):
     try:
         lead = model.generate_content(f"{content}\nUser: {prompt}")
         #st.chat_message("assistant").write(lead.text)
+        print(lead.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
     if lead.text != 'N':    
