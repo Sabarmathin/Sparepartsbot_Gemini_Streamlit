@@ -58,7 +58,7 @@ if prompt := st.chat_input("Ask about parts..."):
         st.error(f"Gemini Error: {e}")
     if lead != 'N':    
         import json
-        dict_lead = json.loads(lead)
+        dict_lead = json.loads(lead.text)
         print("Lead Type", type(dict_lead))
         
         if type(dict_lead) is dict:            
