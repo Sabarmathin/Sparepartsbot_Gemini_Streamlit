@@ -63,7 +63,7 @@ if prompt := st.chat_input("Ask about parts..."):
         if type(dict_lead) is dict:            
             def save_data_to_gsheets(dict_lead):
                 # 1. Connect to GSheets
-                conn = st.connection("gsheets", type=st_gsheets_connection.GSheetsConnection)
+                conn = st.connection("gsheets", type=GSheetsConnection)
                 SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
                 
                 # 2. Read existing data
