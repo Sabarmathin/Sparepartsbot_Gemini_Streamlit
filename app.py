@@ -77,6 +77,12 @@ if prompt := st.chat_input("Ask about parts..."):
                 conn.update(spreadsheet=SHEET_ID, data=updated_df)   
                 
                 st.success("Order details successfully sent to the sales team!")
+            # if isinstance(dict_lead, dict) and "name" in dict_lead:
+            #     # Save the details
+            save_data_to_gsheets(dict_lead)
+                
+                # Reset your chat flags
+            st.session_state.awaiting_info = False
         else:
           print("This is not dictionary")
     else:
