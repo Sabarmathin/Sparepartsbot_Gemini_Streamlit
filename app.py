@@ -52,10 +52,10 @@ if prompt := st.chat_input("Ask about parts..."):
 
     try:
         lead = model.generate_content(f"{content}\nUser: {prompt}")
-        st.chat_message("assistant").write(lead.text)
+        #st.chat_message("assistant").write(lead.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
-    if lead != 'N':    
+    if lead.text != 'N':    
         dict_lead = json.loads(lead.text)
         print("Lead Type", type(dict_lead))
         
