@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 import json
-import google.genai as genai
+import google.generativeai as genai
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 import gspread
