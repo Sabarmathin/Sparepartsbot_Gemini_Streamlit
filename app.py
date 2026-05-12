@@ -63,32 +63,29 @@ if prompt := st.chat_input("Ask about parts..."):
     except Exception as e:
         st.error(f"Gemini Error: {e}")
         
-    if lead.find('{') != -1:
-        import json
-        dict_lead = json.loads(lead)
-        print("Lead Type", type(dict_lead))
-        
-        if type(dict_lead) is dict:            
-            def save_data_to_gsheets(dict_lead):
-                # 1. Connect to GSheets
-                conn = st.connection("gsheets", type=st_gsheets_connection.GSheetsConnection)
-                SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
-                
-                # 2. Read existing data
-                existing_data = conn.read(spreadsheet=SHEET_ID, ttl=0)
-                
-                # 3. Create a DataFrame from the dictionary
-                new_row = pd.DataFrame([dict_lead])
-                
-                # 4. Combine and update the sheet
-                updated_df = pd.concat([existing_data, new_row], ignore_index=True)
-                conn.update(spreadsheet=SHEET_ID, data=updated_df)   
-                
-                st.success("Order details successfully sent to the sales team!")
-        else:
-          print("This is not dictionary")
+    import json
+    dict_lead = json.loads(lead)
+    print("Lead Type", type(dict_lead))
+    
+    if type(dict_lead) is dict:            
+        def save_data_to_gsheets(dict_lead):
+            # 1. Connect to GSheets
+            conn = st.connection("gsheets", type=st_gsheets_connection.GSheetsConnection)
+            SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
+            
+            # 2. Read existing data
+            existing_data = conn.read(spreadsheet=SHEET_ID, ttl=0)
+            
+            # 3. Create a DataFrame from the dictionary
+            new_row = pd.DataFrame([dict_lead])
+            
+            # 4. Combine and update the sheet
+            updated_df = pd.concat([existing_data, new_row], ignore_index=True)
+            conn.update(spreadsheet=SHEET_ID, data=updated_df)   
+            
+            st.success("Order details successfully sent to the sales team!")
     else:
-       print("No Lead captured")
+      print("This is not dictionary")
     # if prompt:
     #     order_keywords = ["order", "purchase", "buy", "checkout", "get this","name","address","phone"]
     #     user_data = prompt.split(",")
