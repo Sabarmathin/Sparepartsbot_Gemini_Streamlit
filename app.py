@@ -76,7 +76,7 @@ if prompt := st.chat_input("Ask about parts..."):
                 updated_df = pd.concat([existing_data, new_row], ignore_index=True)
                 conn.update(spreadsheet=SHEET_ID, data=updated_df)   
                 
-                st.success("Order details successfully sent to the sales team!")
+                st.success("Contact details successfully sent to the sales team!")
             # if isinstance(dict_lead, dict) and "name" in dict_lead:
             #     # Save the details
             save_data_to_gsheets(dict_lead)
