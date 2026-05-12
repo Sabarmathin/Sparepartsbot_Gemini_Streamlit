@@ -48,16 +48,14 @@ if prompt := st.chat_input("Ask about parts..."):
     context = f"You are a spare parts dealer. Inventory: {json.dumps(inventory)}. "
     context += "Check compatibility and price. Be helpful and concise."     
 
-    content = "you are a assitant you checks the user_input response contains Name, Address and phone number if it is  convert into the dictionary format you should return only in json format Name: RR, Address: Chennai,Phone: +918883916171, if user_input doest contain name and phone number then return only in Single character 'N'"
+    content = "you are a assitant you checks the user_input response contains Name, Address and phone number if it is  convert should return only in json format Name: RR, Address: Chennai,Phone: +918883916171, if user_input doest contain name and phone number then return only in Single character 'N'"
 
     try:
         lead = model.generate_content(f"{content}\nUser: {prompt}")
-        print("Lead Type", type(lead))
-        print(lead.text)
+        st.chat_message("assistant").write(lead.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
     if lead != 'N':    
-        import json
         dict_lead = json.loads(lead.text)
         print("Lead Type", type(dict_lead))
         
