@@ -46,8 +46,74 @@ if prompt := st.chat_input("Ask about parts..."):
     
     # System Instruction
     context = f"You are a spare parts dealer. Inventory: {json.dumps(inventory)}. "
-    context += "Check compatibility and price. Be helpful and concise."
+    context += "Check compatibility and price. Be helpful and concise."     
     
+
+    content = "You are a assitant you checks the user_input response contains order, purchase, buy, check out and get this then ask the user to provide details of Name, address and phone number to place the order and then convert  Name, address and phone number into the dictionary format you should return only in json format Name: RR, Address: Chennai, Phone: +918883916171, if user_input doest contain name and phone number then return only in Single character 'N'"
+
+    try:
+        lead = model.generate_content(f"{content}\nUser: {prompt}")
+        print(response.text)
+    except Exception as e:
+        st.error(f"Gemini Error: {e}")
+        
+    # 1. Initialize Connection
+    conn = st.connection("gsheets", type=GSheetsConnection)
+    SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
+    if lead.find('{') != -1:
+        import json
+        dict_lead = json.loads(lead)
+        print("Lead Type", type(dict_lead))
+        
+        if type(dict_lead) is dict:            
+            def save_data_to_gsheets(dict_lead):
+                # 1. Connect to GSheets
+                conn = st.connection("gsheets", type=st_gsheets_connection.GSheetsConnection)
+                
+                # 2. Read existing data
+                existing_data = conn.read(spreadsheet=SHEET_ID, ttl=0)
+                
+                # 3. Create a DataFrame from the dictionary
+                new_row = pd.DataFrame([dict_lead])
+                
+                # 4. Combine and update the sheet
+                updated_df = pd.concat([existing_data, new_row], ignore_index=True)
+                conn.update(spreadsheet=SHEET_ID, data=updated_df)   
+                
+                st.success("Order details successfully sent to the sales team!")
+        else:
+          print("This is not dictionary")
+    else:
+       print("No Lead captured")
+    # if prompt:
+    #     order_keywords = ["order", "purchase", "buy", "checkout", "get this","name","address","phone"]
+    #     user_data = prompt.split(",")
+    #     if any(word in prompt.lower() for word in order_keywords):
+    #         st.warning("Please provide Name, Address, and Phone separated by commas.")
+    #     elif len(user_data) == 3:
+    #         def save_to_gsheets(name, address, phone,part_info):
+    #             # Create a new row of data
+    #             new_data = pd.DataFrame([{
+    #                 "Name": name,
+    #                 "Address": address,
+    #                 "Phone": phone,
+    #                 "Order_Details": part_info
+    #             }])
+    #             df = conn.read(spreadsheet=SHEET_ID, ttl=0)
+                         
+    #             # 3. Add the new row to the old data
+    #             # fillna('') prevents errors if your sheet has empty cells
+    #             updated_df = pd.concat([df, new_data], ignore_index=True).fillna("")
+            
+    #             # 4. Save it back to Google Sheets
+    #             conn.update(spreadsheet=SHEET_ID, data=updated_df)            
+            
+    #         if len(user_data) == 3:
+    #             name, address, phone = [item.strip() for item in user_data]
+    #             save_to_gsheets(name, address, phone, "User requested order")
+    #             st.session_state.awaiting_info = False
+    #         else:
+    #             st.warning("Please provide Name, Address, and Phone separated by commas.")
     try:
         response = model.generate_content(f"{context}\nUser: {prompt}")
         print(response.text)
@@ -55,39 +121,6 @@ if prompt := st.chat_input("Ask about parts..."):
         st.chat_message("assistant").write(response.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
-    # 1. Initialize Connection
-    conn = st.connection("gsheets", type=GSheetsConnection)
-    SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
-    
-    if prompt:
-        order_keywords = ["order", "purchase", "buy", "checkout", "get this","name","address","phone"]
-        user_data = prompt.split(",")
-        if any(word in prompt.lower() for word in order_keywords):
-            st.warning("Please provide Name, Address, and Phone separated by commas.")
-        elif len(user_data) == 3:
-            def save_to_gsheets(name, address, phone,part_info):
-                # Create a new row of data
-                new_data = pd.DataFrame([{
-                    "Name": name,
-                    "Address": address,
-                    "Phone": phone,
-                    "Order_Details": part_info
-                }])
-                df = conn.read(spreadsheet=SHEET_ID, ttl=0)
-                         
-                # 3. Add the new row to the old data
-                # fillna('') prevents errors if your sheet has empty cells
-                updated_df = pd.concat([df, new_data], ignore_index=True).fillna("")
-            
-                # 4. Save it back to Google Sheets
-                conn.update(spreadsheet=SHEET_ID, data=updated_df)            
-            
-            if len(user_data) == 3:
-                name, address, phone = [item.strip() for item in user_data]
-                save_to_gsheets(name, address, phone, "User requested order")
-                st.session_state.awaiting_info = False
-            else:
-                st.warning("Please provide Name, Address, and Phone separated by commas.")
 
 # # Show assistant response
 # st.session_state.messages.append({"role": "assistant", "content": response})
