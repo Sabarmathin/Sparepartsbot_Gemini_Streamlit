@@ -56,7 +56,7 @@ if prompt := st.chat_input("Ask about parts..."):
         print(lead.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
-    if lead.find('{') != -1:    
+    if lead != 'N':    
         import json
         dict_lead = json.loads(lead)
         print("Lead Type", type(dict_lead))
