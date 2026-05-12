@@ -59,6 +59,7 @@ if prompt := st.chat_input("Ask about parts..."):
 
     try:
         lead = model.generate_content(f"{content}\nUser: {prompt}")
+        print("Lead Type", type(lead))
         print(lead.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
