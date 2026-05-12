@@ -47,15 +47,8 @@ if prompt := st.chat_input("Ask about parts..."):
     # System Instruction
     context = f"You are a spare parts dealer. Inventory: {json.dumps(inventory)}. "
     context += "Check compatibility and price. Be helpful and concise."     
-    try:
-        response = model.generate_content(f"{context}\nUser: {prompt}")
-        print(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text})
-        st.chat_message("assistant").write(response.text)
-    except Exception as e:
-        st.error(f"Gemini Error: {e}")
 
-    content = "You are a assitant you checks the user_input response contains order, purchase, buy, check out and get this then ask the user to provide details of Name, address and phone number to place the order and then convert  Name, address and phone number into the dictionary format you should return only in json format Name: RR, Address: Chennai, Phone: +918883916171, if user_input doest contain name and phone number then return only in Single character 'N'"
+    content = "you are a assitant you checks the user_input response contains Name, Address and phone number if it is  convert into the dictionary format you should return only in json format Name: RR, Address: Chennai,Phone: +918883916171, if user_input doest contain name and phone number then return only in Single character 'N'"
 
     try:
         lead = model.generate_content(f"{content}\nUser: {prompt}")
@@ -63,30 +56,39 @@ if prompt := st.chat_input("Ask about parts..."):
         print(lead.text)
     except Exception as e:
         st.error(f"Gemini Error: {e}")
+    if lead.find('{') != -1:    
+        import json
+        dict_lead = json.loads(lead)
+        print("Lead Type", type(dict_lead))
         
-    import json
-    dict_lead = json.loads(lead)
-    print("Lead Type", type(dict_lead))
-    
-    if type(dict_lead) is dict:            
-        def save_data_to_gsheets(dict_lead):
-            # 1. Connect to GSheets
-            conn = st.connection("gsheets", type=st_gsheets_connection.GSheetsConnection)
-            SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
-            
-            # 2. Read existing data
-            existing_data = conn.read(spreadsheet=SHEET_ID, ttl=0)
-            
-            # 3. Create a DataFrame from the dictionary
-            new_row = pd.DataFrame([dict_lead])
-            
-            # 4. Combine and update the sheet
-            updated_df = pd.concat([existing_data, new_row], ignore_index=True)
-            conn.update(spreadsheet=SHEET_ID, data=updated_df)   
-            
-            st.success("Order details successfully sent to the sales team!")
+        if type(dict_lead) is dict:            
+            def save_data_to_gsheets(dict_lead):
+                # 1. Connect to GSheets
+                conn = st.connection("gsheets", type=st_gsheets_connection.GSheetsConnection)
+                SHEET_ID = "https://docs.google.com/spreadsheets/d/1iQvaPlfJbLjOKNhxHzO116tm7wHa5rUueBP5pN10zLw/edit"
+                
+                # 2. Read existing data
+                existing_data = conn.read(spreadsheet=SHEET_ID, ttl=0)
+                
+                # 3. Create a DataFrame from the dictionary
+                new_row = pd.DataFrame([dict_lead])
+                
+                # 4. Combine and update the sheet
+                updated_df = pd.concat([existing_data, new_row], ignore_index=True)
+                conn.update(spreadsheet=SHEET_ID, data=updated_df)   
+                
+                st.success("Order details successfully sent to the sales team!")
+        else:
+          print("This is not dictionary")
     else:
-      print("This is not dictionary")
+        print("No Lead captured")
+    try:
+        response = model.generate_content(f"{context}\nUser: {prompt}")
+        print(response.text)
+        st.session_state.messages.append({"role": "assistant", "content": response.text})
+        st.chat_message("assistant").write(response.text)
+    except Exception as e:
+        st.error(f"Gemini Error: {e}")
     # if prompt:
     #     order_keywords = ["order", "purchase", "buy", "checkout", "get this","name","address","phone"]
     #     user_data = prompt.split(",")
