@@ -50,7 +50,7 @@ if prompt := st.chat_input("Ask about parts..."):
     context += "If user asked to order any spare parts, order the spare parts and ask them about the Name,delivery address and contact details. If there is previous order rom the user remember that order details dont ask user again for which order delivery is to be happen."  
 
     content = """you are a assitant you checks the user_input response contains Name, Address and phone number if it is  convert should return only in json format Name: RR, Address: Chennai,Phone: +918883916171, 
-    if user_input doest contain name and phone number then return only in Single character 'N'. Remember previous order details in the chat and response to the current message."""
+    if user_input doest contain name and phone number then return only in Single character 'N'. If there is previous order rom the user remember that order details dont ask user again for which order delivery is to be happen."""
 
     try:
         lead = model.generate_content(f"{content}\nUser: {prompt}")
