@@ -46,7 +46,7 @@ if prompt := st.chat_input("Ask about parts..."):
     
     # System Instruction
     context = f"You are a spare parts dealer. Inventory: {json.dumps(inventory)}. "
-    context += "Check compatibility and price. Be helpful and concise."   
+    context += "Check compatibility and price. Be helpful and concise. Also remember the previous chat and give the response."   
     context += "If user asked to order any spare parts, order the spare parts and ask them about the Name,delivery address and contact details."  
 
     content = "you are a assitant you checks the user_input response contains Name, Address and phone number if it is  convert should return only in json format Name: RR, Address: Chennai,Phone: +918883916171, if user_input doest contain name and phone number then return only in Single character 'N'"
